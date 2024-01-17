@@ -14,7 +14,7 @@ class SigninController < ApplicationController
                           secure: Rails.env.production?)
       render json: { crsf: tokens[:csrf]}
     else
-      not_found
+      not_authorized
     end
   end
 
@@ -26,6 +26,8 @@ class SigninController < ApplicationController
 
   private
 
-
+  def not_found
+    render json: { error: "Cannot find email/password combination" }, status: :not_found
+  end
 
 end
