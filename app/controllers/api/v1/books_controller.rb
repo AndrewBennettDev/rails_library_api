@@ -1,11 +1,12 @@
 module API
   module V1
     class BooksController < ApplicationController
+      before_action :authorize_access_request!
       before_action :set_book, only: %i[ show update destroy ]
 
       # GET /books
       def index
-        @books = Book.all
+        @books = current_user.books.all
 
         render json: @books
       end
@@ -17,7 +18,7 @@ module API
 
       # POST /books
       def create
-        @book = Book.new(book_params)
+        @book = current_user.books.build(book_params)
 
         if @book.save
           render json: @book, status: :created, location: @book
@@ -43,12 +44,12 @@ module API
       private
         # Use callbacks to share common setup or constraints between actions.
         def set_book
-          @book = Book.find(params[:id])
+          @book = current_user.books.find(params[:id])
         end
 
         # Only allow a list of trusted parameters through.
         def book_params
-          params.require(:book).permit(:title, :year, :artist_id, :user_id)
+          params.require(:book).permit(:title, :year, :artist_id)
         end
       end
   end
